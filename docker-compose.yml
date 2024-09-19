@@ -1,0 +1,79 @@
+services:
+  lasimra:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    hostname: lasimra
+    stdin_open: true
+    expose:
+      - "8000"
+    volumes:
+      - .env:/.env
+    # command: bash -c "python manage.py migrate && gunicorn core.wsgi:application -b 0.0.0.0:8000"
+    command: /bin/sh -c "python manage.py runserver 0.0.0.0:8000"
+    # depends_on:
+    #   - redis
+    networks:
+      - live
+
+  # redis:
+  #   image: 'redis:alpine'
+  #   hostname: redis
+  #   networks:
+  #     - live
+
+  # nginx:
+  #   image: nginx
+  #   hostname: nginx
+  #   ports:
+  #     - '82:8000'
+  #   volumes:
+  #     - ./config/nginx:/etc/nginx/conf.d
+  #   depends_on:
+  #     - lasimra
+  #   networks:
+  #     - live
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: "celery -A core worker -l info --queue=fila1"
+    depends_on:
+      - lasimra
+      # - redis
+    restart: on-failure
+    networks:
+      - live
+
+  flower:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5555:5555"
+    command: "celery -A core flower --address=0.0.0.0"
+    depends_on:
+      - celery
+    networks:
+      - live
+
+networks:
+  live:
+# services:
+#   lasimra:
+#     build: .
+#     command: /bin/sh -c "python manage.py runserver 0.0.0.0:8000"
+#       # context: .
+#       # dockerfile: Dockerfile
+#     image: o3cloudng/lasimra
+#     # command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
+#     volumes:
+#       - .:/app
+#     ports:
+#       - 8000:8000
+#     env_file:
+#       - ./.env
+# volumes:
+#   static_volume:
+#   media_volume:

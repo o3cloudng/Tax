@@ -1,0 +1,22 @@
+#########
+HOW TO SOLVE BROKEN MIGRATION HISTORY IN DJANGO
+https://blog.devgenius.io/how-to-solve-broken-migration-history-in-django-57a161968e55
+
+
+
+python manage.py migrate — fake app_name zero
+
+
+find . -path “*/migrations/*.py” -not -name “__init__.py” -delete
+find . -path “*/migrations/*.pyc” -delete
+
+python manage.py makemigrations app_name
+
+
+python manage.py migrate — fake-initial app_name
+
+python manage.py makemigrations app_name
+
+python manage.py migrate app_name
+python manage.py migrate app_name
+

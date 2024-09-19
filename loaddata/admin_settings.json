@@ -1,0 +1,54 @@
+[
+  {
+    "model": "account.adminsetting",
+    "pk": 1,
+    "fields": {
+      "name": "application fee",
+      "slug": "application-fee",
+      "description": "Application Fee",
+      "rate": 50000,
+      "is_active": true,
+      "created_at": "2024-06-09T16:38:16.298Z",
+      "modified_at": "2024-06-09T16:38:16.298Z"
+    }
+  },
+  {
+    "model": "account.adminsetting",
+    "pk": 2,
+    "fields": {
+      "name": "Site Assessment",
+      "slug": "site-assessment",
+      "description": "Site Assessment Report (SAR)",
+      "rate": 1233750,
+      "is_active": true,
+      "created_at": "2024-06-09T16:38:55.367Z",
+      "modified_at": "2024-06-09T16:38:55.367Z"
+    }
+  },
+  {
+    "model": "account.adminsetting",
+    "pk": 3,
+    "fields": {
+      "name": "Admin & PM Fees",
+      "slug": "admin-pm-fees",
+      "description": "15% Administrative & Project Management Fees",
+      "rate": 15,
+      "is_active": true,
+      "created_at": "2024-06-09T16:39:31.358Z",
+      "modified_at": "2024-06-09T16:39:31.358Z"
+    }
+  },
+  {
+    "model": "account.adminsetting",
+    "pk": 4,
+    "fields": {
+      "name": "penalty",
+      "slug": "penalty",
+      "description": "Penalty fee per day",
+      "rate": 50000,
+      "is_active": true,
+      "created_at": "2024-06-17T07:42:57.822Z",
+      "modified_at": "2024-06-17T07:42:57.822Z"
+    }
+  }
+]
