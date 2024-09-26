@@ -3,7 +3,29 @@ from django.contrib.auth.forms import UserCreationForm
 from account.models import User, AdminSetting
 from tax.models import InfrastructureType, DemandNotice
 from agency.models import Agency, Notification
+from django.urls import reverse_lazy
+from account.models import Sector
 
+
+class SectorForm(forms.ModelForm):
+    name = forms.CharField(
+        max_length=255,
+        required=True, 
+        widget=forms.widgets.Input(
+            attrs={
+                'hx-get': reverse_lazy('SectorValidation'),
+                'hx-target': '#sector-error',
+                'hx-trigger': 'input changed delay:500ms, infra_name',
+                'hx-swap': 'innerHTML',
+                "placeholder": "Enter agency name", 
+                "type":"text",
+                "class": "w-full py-4", 
+                "required": True, 
+                }),
+            )
+    class Meta:
+        model = Sector
+        fields = ['name']
 
 class AddUserForm(UserCreationForm):
     USER_TYPE_CHOICES =( 
@@ -118,20 +140,35 @@ class AgencyForm(forms.ModelForm):
 
 
 class InfrastructureSettingsForm(forms.ModelForm):
+
+    # def clean_infra_name(self):
+    #     infra_name = self.cleaned_data['infra_name']
+    #     if InfrastructureType.objects.filter(infra_name=infra_name).exists():
+    #         raise forms.ValidationError(f"{infra_name} already exisits")
+    #     return infra_name
+    
     infra_name = forms.CharField(
-        # queryset = InfrastructureType.objects.all(),
         required=True, 
         widget=forms.widgets.Input(
             attrs={
+                'hx-get': reverse_lazy('InfraTypeValidation'),
+                'hx-target': '#infra-type-error',
+                'hx-trigger': 'input changed delay:500ms, infra_name',
+                'hx-swap': 'innerHTML',
+                'class': "form-control",
                 "placeholder": "Infrastructure name", 
                 "type":"text",
                 "class": "w-full py-4", 
                 }),
             )
-    rate = forms.IntegerField(
+    rate = forms.CharField(
         required=True, 
         widget=forms.widgets.Input(
             attrs={
+                'hx-get': reverse_lazy('RateValidation'),
+                'hx-target': '#rate-error',
+                'hx-trigger': 'input changed delay:500ms, infra_name',
+                'hx-swap': 'innerHTML',
                 "placeholder": "Amount", 
                 "type":"text",
                 "class": "border-0 focus:ring-0 bg-transparent", 
@@ -143,17 +180,14 @@ class InfrastructureSettingsForm(forms.ModelForm):
 
 
 class RevenueForm(forms.ModelForm):
-    # REVENUE_CHOICES =( 
-    #     ("site-assessment", "Site Assessment"), 
-    #     ("application-fee", "Application fee"), 
-    #     ("admin-charges", "Admin charges"), 
-    #     ("penalty", "Penalty"), 
-    # ) 
     name = forms.CharField(
-        # queryset = AdminSetting.objects.all(),
         required=True, 
         widget=forms.widgets.Input(
             attrs={
+                'hx-get': reverse_lazy('RevenueNameValidation'),
+                'hx-target': '#revenue-name-error',
+                'hx-trigger': 'input changed delay:500ms, infra_name',
+                'hx-swap': 'innerHTML',
                 "placeholder": "Revenue type", 
                 "type":"text",
                 "class": "w-full py-4", 
@@ -172,6 +206,10 @@ class RevenueForm(forms.ModelForm):
         required=True, 
         widget=forms.widgets.Input(
             attrs={
+                'hx-get': reverse_lazy('RevenueRateValidation'),
+                'hx-target': '#revenue-rate-error',
+                'hx-trigger': 'input changed delay:500ms, infra_name',
+                'hx-swap': 'innerHTML',
                 "placeholder": "Amount", 
                 "type":"text",
                 "class": "border-0 focus:ring-0 bg-transparent", 

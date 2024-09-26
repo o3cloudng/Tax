@@ -1,9 +1,54 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from tax.models import Infrastructure, DemandNotice
+from tax.models import Infrastructure, DemandNotice, InfrastructureType
+from account.models import AdminSetting, Sector
 from django.db.models import Q
 from account.models import User
+from django_htmx.http import HttpResponseClientRedirect
+from django.urls import reverse_lazy
+from django.contrib import messages
+from agency.forms import InfrastructureSettingsForm
 
+
+@login_required
+def delete_infra_settings(request):
+    infraid = request.POST.get('infraid')
+    infraid = InfrastructureType.objects.get(pk=infraid)
+    print("DELETE INFRA: ", infraid)
+    infraid.delete()
+    # return "DELETED"
+    messages.success(request, f"{ infraid.infra_name }, was deleted.")
+    return HttpResponseClientRedirect(reverse_lazy("agency_settings"))
+
+@login_required
+def delete_revenue_settings(request):
+    revenue = request.POST.get('revenue')
+    revenue = AdminSetting.objects.get(pk=revenue)
+    print("DELETE EVENUE: ", revenue)
+    revenue.delete()
+    # return "DELETED"
+    messages.success(request, f"{ revenue.name }, was deleted.")
+    return HttpResponseClientRedirect(reverse_lazy("agency_settings"))
+
+@login_required
+def delete_sector_settings(request):
+    sector = request.POST.get('sector')
+    sector = Sector.objects.get(pk=sector)
+    sector.delete()
+    print("DELETE SECTOR: ", sector)
+    # return "DELETED"
+    messages.success(request, f"{ sector.name }, was deleted.")
+    return HttpResponseClientRedirect(reverse_lazy("agency_settings"))
+
+@login_required
+def delete_notification_settings(request):
+    notification = request.POST.get('notification')
+    notification = InfrastructureType.objects.get(pk=notification)
+    notification.delete()
+    print("DELETE INFRA: ", notification)
+    # return "DELETED"
+    messages.success(request, f"{ notification.name }, was deleted.")
+    return HttpResponseClientRedirect(reverse_lazy("agency_settings"))
 
 @login_required
 def company_search(request):

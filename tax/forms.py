@@ -1,5 +1,6 @@
 from django import forms
 from tax.models import InfrastructureType, Waiver, Remittance, Infrastructure
+from django.urls import reverse_lazy
 
 
 class InfrastructureForm(forms.ModelForm):
@@ -11,7 +12,6 @@ class InfrastructureForm(forms.ModelForm):
             'infra_type': forms.Select(
                 # choices = InfrastructureType.objects.all(), 
                 attrs={
-                'class': "form-control",
                 'style': 'max-width: 150px;',
                 'required': True,
                 'placeholder': 'Infrastructure Type'

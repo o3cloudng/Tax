@@ -4,7 +4,7 @@ https://blog.devgenius.io/how-to-solve-broken-migration-history-in-django-57a161
 
 
 
-python manage.py migrate — fake app_name zero
+python manage.py migrate --fake app_name zero
 
 
 find . -path “*/migrations/*.py” -not -name “__init__.py” -delete

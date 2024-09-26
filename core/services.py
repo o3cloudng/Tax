@@ -1,9 +1,36 @@
 from account.models import AdminSetting
 from tax.models import Infrastructure, DemandNotice, Infrastructure
-from django.db.models import (F, ExpressionWrapper, Q, Sum, Count, CharField, DecimalField, DateTimeField,
-                                IntegerField, Value, Case, When, Func)
-from django.db.models.functions import Concat, Cast, Now
+from django.db.models import (F, ExpressionWrapper, Q, Sum, Count, IntegerField, Value, Case, When, Func)
+from django.db.models.functions import Concat, Now
 from datetime import datetime, date
+from django.http.response import StreamingHttpResponse
+from django.shortcuts import render
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+import time
+
+
+def event_stream():
+    initial_data = ""
+    while True:
+        data = json.dumps(list(DemandNotice.objects.order_by("-id").values("referenceid", "total_due", "company__company_name")),
+                          cls=DjangoJSONEncoder
+                          )
+        
+        if not initial_data == data:
+            yield "\ndata: {}\n\n".format(data)
+            initial_data = data
+        time.sleep(1)
+
+# def test_stream(request):
+def DemandNoticeStream(request):
+    response = StreamingHttpResponse(event_stream())
+    response['Content-Type'] = 'text/event-stream'
+    return response
+
+def stream(request):
+    return render(request, 'agency/streaming.html')
+
 
 def current_year():
     current_year = []

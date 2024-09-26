@@ -18,6 +18,8 @@ from agency.tasks import task_func, send_email_func
 from agency.forms import AgencyForm, InfrastructureSettingsForm, AddUserForm, NotificationForm, RevenueForm
 from tax.forms import InfrastructureForm, InfrastructureForm2
 from agency.models import Agency, Notification
+from agency.forms import InfrastructureSettingsForm, RevenueForm, SectorForm
+from django.urls import reverse_lazy
 from tax.forms import WaiverForm 
 from core.utils import send_email_function
 from core import settings
@@ -208,7 +210,7 @@ def agency_disputes(request):
     one_month = Q(created_at__gte=(now()-relativedelta(months=1)))
 
     all = DemandNotice.objects.all().order_by('-updated_at')
-    disputed = all.filter(Q(status__icontains="DISPUTED"))
+    disputed = all.filter(Q(status__icontains="DISPUTED") | Q(status__icontains="RESOLVED"))
     if disputed.exists():
         all_last_month =  disputed.filter(one_month)
         all_last_month_perc = all_last_month.count() / disputed.count() * 100
@@ -439,6 +441,7 @@ def agency_settings(request):
         'infrastructure_form': InfrastructureSettingsForm(),
         'infrastructure': InfrastructureType.objects.all(),
         'sectors': Sector.objects.all(),
+        'sector_form': SectorForm(),
         'admin_settings': AdminSetting.objects.all(),
         'company_form': AddUserForm(),
         'companies': User.objects.filter(is_superuser=False),
@@ -498,42 +501,52 @@ def add_update_infrastructure(request):
 
     infra_rate = str(request.POST.get('rate')).split('.')[0].replace(',','')
     print("RATE: ", infra_rate)
+    form = InfrastructureSettingsForm(request.POST)
     if request.htmx:
-        if InfrastructureType.objects.filter(infra_name=request.POST.get('infra_name')).exists():
-            infra_settings = InfrastructureType.objects.filter(infra_name=request.POST.get('infra_name'))
-            infra_settings.update(rate=infra_rate, updated_at=datetime.now())
+        if form.is_valid():
+            if InfrastructureType.objects.filter(infra_name=request.POST.get('infra_name')).exists():
+                infra_settings = InfrastructureType.objects.filter(infra_name=request.POST.get('infra_name'))
+                infra_settings.update(rate=infra_rate, updated_at=datetime.now())
+                messages.success(request, "Infrastructure type updated successfully")
+            else:
+                InfrastructureType.objects.create(\
+                    infra_name=request.POST.get('infra_name'),\
+                        rate=request.POST.get('rate'))
+                messages.success(request, "Infrastructure type added successfully")
         else:
-            InfrastructureType.objects.create(\
-                infra_name=request.POST.get('infra_name'),\
-                    rate=request.POST.get('rate'))
+            print("ERROR: ", form.errors)
         return HttpResponseClientRedirect(reverse_lazy("agency_settings"))
 
 @login_required
 def add_update_sector(request):
     if request.htmx:
-        sector_name = request.POST.get('sector_name')
+        sector_name = request.POST.get('sector')
         if Sector.objects.filter(name=sector_name).exists():
-            sector = Sector.objects.filter(name=sector_name)
+            sector = Sector.objects.filter(name__icontains=sector_name)
             sector.update(name=sector_name, modified_at=timezone.now())
+            messages.success(request, "Sector updated successfully")
         else:
             Sector.objects.create(name=sector_name, modified_at=timezone.now())
+            messages.success(request, "Sector added successfully")
             
         return HttpResponseClientRedirect(reverse_lazy("agency_settings"))
 
 @login_required
 def add_update_revenue(request):
-    rev_name = str(request.POST.get('name')).replace(' ', '-')
+    rev_name = str(request.POST.get('name')).replace(' ', '-').lower()
     rev_rate = str(request.POST.get('rate')).split('.')[0].replace(',','')
     description = request.POST.get('description')
     print("REVENUE: ", rev_name, request.POST.get('description'), rev_rate)
     if request.htmx:
-        if AdminSetting.objects.filter(slug=rev_name).exists():
+        if AdminSetting.objects.filter(slug__icontains=rev_name).exists():
             admin_settings = AdminSetting.objects.filter(slug=rev_name)
             admin_settings.update(description=description, rate=rev_rate, updated_at=datetime.now())
+            messages.success(request, "Revenue updated successfully")
         else:
             AdminSetting.objects.create(name=request.POST.get('name'),\
                 description=description, rate=rev_rate,\
                     updated_at=datetime.now())
+            messages.success(request, "Revenue added successfully")
             
         return HttpResponseClientRedirect(reverse_lazy("agency_settings"))
 

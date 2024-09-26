@@ -18,7 +18,7 @@ class Agency(models.Model):
 class Notification(models.Model):
     notification = models.CharField(max_length=200, blank=False, unique=True)
     slug = models.SlugField(null=True, default="slug")
-    message = models.CharField(max_length=1000, blank=False, unique=True)
+    message = models.CharField(max_length=255, blank=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 

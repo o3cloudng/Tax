@@ -51,6 +51,10 @@ def new_infrastructure(request):
 @login_required
 def generate_demand_notice(request, ref_id):
     company = request.user
+    if not Infrastructure.objects.select_related('infra_type') \
+        .filter(Q(company=company) & Q(processed=False) & Q(created_by=company)).exists():
+        messages.error(request, "No infrastructure entered.")
+        return redirect('apply_for_permit')
     
     total_sum, subtotal, sum_cost_infrastructure, application_cost, admin_fees, sar_cost, infra = total_due(company, False)
     print("TOTAL DUES: ", total_sum, "| INFRA COST: ", sum_cost_infrastructure, "| APP: ", application_cost, "| ADMIN: ", admin_fees, "| SAR: ", sar_cost)

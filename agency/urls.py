@@ -4,6 +4,8 @@ from agency.receipt_view import *
 from agency.view.searches import *
 from agency.infrastructure import *
 from agency.demand_notice import *
+from agency.view import validation
+from core import services
 
 urlpatterns = [
     # PAGES
@@ -16,6 +18,8 @@ urlpatterns = [
     path('companies/revised/notify/', send_revised_notice, name="send_revised_notice"),
     path('help/', agency_help, name="agency_help"),
     path('settings/', agency_settings, name="agency_settings"),
+    path('settings/revenue/', delete_revenue_settings, name="delete_revenue_settings"),
+    path('settings/sector/', delete_sector_settings, name="delete_sector_settings"),
 
     # Infrastructure
     path('infrastructure/add/<int:pk>/', agency_apply_for_permit, name="agency_add_infrastructure"),
@@ -74,6 +78,8 @@ urlpatterns = [
     path('validate_name/', validate_name, name="validate_name"),
 
     path('notification/', notification_view, name="notification"),
+    # HTMX DELETE
+    path('infrastructure/delete/', delete_infra_settings, name="delete_infra_settings"),
 
 
     path('email/', email_template, name="email_template"),
@@ -89,4 +95,15 @@ urlpatterns = [
     path('sendemail/', sendemail, name="sendemail"),
     path('sendhtml/', send_email_html, name="send_email_html"),
     path('upload/ex/', agency_upload_new, name="agency_upload_new"),
+
+    # Form Validation with htmx
+    path('validation/email/', validation.InfraTypeValidation, name="InfraTypeValidation"),
+    path('validation/rate/', validation.RateValidation, name="RateValidation"),
+    path('validation/revnue/name/', validation.RevenueNameValidation, name="RevenueNameValidation"),
+    path('validation/revnue/rate/', validation.RevenueRateValidation, name="RevenueRateValidation"),
+    path('validation/sector/', validation.SectorValidation, name="SectorValidation"),
+
+    # NOTIFICATION STREAMING
+    path('streaming/stream/', services.DemandNoticeStream, name="DemandNoticeStream"),
+    path('streaming/', services.stream, name="test_stream"),
 ]

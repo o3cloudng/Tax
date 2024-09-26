@@ -143,6 +143,10 @@ def apply_for_existing_permit(request):
 @login_required
 def generate_ex_demand_notice(request, ref_id):
     company = request.user
+    if not Infrastructure.objects.select_related('infra_type') \
+        .filter(Q(company=company) & Q(processed=False) & Q(is_existing=True) & Q(created_by=company)).exists():
+        messages.error(request, "No infrastructure entered.")
+        return redirect('apply_existing_infra')
     
     total_sum, subtotal, sum_cost_infrastructure, application_cost, admin_fees, sar_cost, infra = total_due(company, True)
     # print("TOTAL DUES: ", total_sum, sum_cost_infrastructure, application_cost, admin_fees, sar_cost)

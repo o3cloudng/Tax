@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from account.models import User, Sector
+from django.urls import reverse_lazy
 
 
 class SignupForm(UserCreationForm):
@@ -93,11 +94,19 @@ class UserProfileForm(forms.ModelForm):
                 'placeholder': 'Company name'
                 }),
             'rc_number': forms.TextInput(attrs={
+                'hx-get': reverse_lazy('ProfileRCValidation'),
+                'hx-target': '#rc-number-error',
+                'hx-trigger': 'input changed delay:500ms, rc_number',
+                'hx-swap': 'innerHTML',
                 'class': "form-control !w-full",
                 'placeholder': 'RC Number',
                 'required': False
                 }),
             'phone_number': forms.TextInput(attrs={
+                'hx-get': reverse_lazy('PhoneValidation'),
+                'hx-target': '#phone-error',
+                'hx-trigger': 'input changed delay:500ms, rc_number',
+                'hx-swap': 'innerHTML',
                 'class': "form-control",
                 'required': False,
                 'placeholder': 'Phone number'

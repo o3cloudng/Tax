@@ -20,6 +20,7 @@
           <img src="/assets/media/{{ request.user.company_logo }}" alt="user--v1" />
         </div>
       </article>
+      {% include 'tax-payers/partials/toasts.html' %}
     </section>
     <section class="md:w-5/6 w-content border-1 h-screen mt-20">
       <article class="w-full flex flex-row justify-between items-center mb-10">
@@ -56,14 +57,16 @@
         <div class="flex flex-row justify-between gap-10 mr-10">
           <div class="w-full">
 
+            {% csrf_token %}
             <label for="company_name" class="text-sm text-orange-400 block w-full my-3">
-              {% csrf_token %}
               Company name
               {{ form.company_name }}
+              <p class="errors ml-2" id="company-name-error" style="color: red;"></p>
             </label>
             <label for="rc_number" class="text-sm text-orange-400 block w-full my-3">
               RC Number
               {{ form.rc_number }}
+              <p class="errors ml-2" id="rc-number-error" style="color: red;"></p>
             </label>
             <label for="Country" class="text-sm text-orange-400 block w-full my-3">
               Country
@@ -82,6 +85,7 @@
             <label for="phone" class="text-sm text-orange-400 block w-full my-3">
               Telephone
               {{ form.phone_number }}
+              <p class="errors ml-2" id="phone-error" style="color: red;"></p>
             </label>
             <label for="StreetAddress" class="text-sm text-orange-400 block w-full my-3">
               Street Address

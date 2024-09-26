@@ -9,6 +9,7 @@ from django.utils.html import strip_tags
 from core.utils import send_email_function
 from agency.models import Agency
 from core import settings 
+from django.urls import reverse_lazy
 
 # @login_required
 def userlogin_old(request):
@@ -139,6 +140,8 @@ def setup_profile(request):
         else:
             print("FORM IS INVALID.")
             print("ERRORS: ", form.errors)
+            messages.error(request, "Please, fill the profile correctly.")
+            return redirect(reverse_lazy('setup_profile'))
         
     form = UserProfileForm(instance=user)
             
