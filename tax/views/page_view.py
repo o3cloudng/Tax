@@ -40,7 +40,7 @@ def dashboard(request):
 
 
 @login_required
-@tax_payer_only
+# @tax_payer_only
 def demand_notice(request):
     all = DemandNotice.objects.filter(company=request.user).order_by('-updated_at')
     demand_notices = all.all()
@@ -71,8 +71,6 @@ def demand_notice(request):
 
     if not total_resolved:
         total_resolved = 0.00
-        
-    # print("TOTAL DUE: ", total_demand_notices)
 
     context = {
          "is_profile_complete" : False,
