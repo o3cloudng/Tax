@@ -72,7 +72,7 @@ def demand_notice(request):
     if not total_resolved:
         total_resolved = 0.00
         
-    print("TOTAL DUE: ", total_demand_notices)
+    # print("TOTAL DUE: ", total_demand_notices)
 
     context = {
          "is_profile_complete" : False,
