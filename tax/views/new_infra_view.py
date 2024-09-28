@@ -21,11 +21,9 @@ from django.db.models.functions import Now
 @login_required
 @tax_payer_only
 def new_infrastructure(request):
-    # NEW: APPLY FOR NEW PERMIT
     form = InfrastructureForm()
     
-    # total_sum, subtotal, sum_cost_infrastructure, application_cost, admin_fees, sar_cost = total_due(request.user.id, False)
-    # print("TOTAL DUES: ", total_sum, sum_cost_infrastructure, application_cost, admin_fees, sar_cost)
+    total_sum, subtotal, sum_cost_infrastructure, application_cost, admin_fees, sar_cost = total_due(request.user.id, False)
 
     current_year = datetime.now().year
     infrastructures= Infrastructure.objects\
