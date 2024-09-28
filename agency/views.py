@@ -187,7 +187,7 @@ def agency_demand_notice(request):
     if not total_resolved:
         total_resolved = 0.00
         
-    print("TOTAL DUE: ", total_demand_notices)
+    # print("TOTAL DUE: ", total_demand_notices)
 
     context = {
         "is_profile_complete" : False,
@@ -232,7 +232,7 @@ def agency_disputes(request):
     if unresolved.exists():
         unresolved_last_month =  disputed.filter(one_month)
         unresolved_last_month_perc = unresolved_last_month.count() / unresolved.count() * 100
-        print("UNREVISED: ", unresolved.count(), "MONTH NO: ", unresolved_last_month.count(), "PERC %: ", unresolved_last_month_perc)
+        # print("UNREVISED: ", unresolved.count(), "MONTH NO: ", unresolved_last_month.count(), "PERC %: ", unresolved_last_month_perc)
     else:
         unresolved_last_month_perc = 0
 
@@ -292,7 +292,7 @@ def agency_infrastructure(request):
     if pipeline.exists():
         pipeline_last_month =  infrastructures.filter(one_month & Q(infra_type__infra_name__icontains="pipe"))
         pipeline_last_month_perc = pipeline_last_month.count() / pipeline.count() * 100
-        print("PIPELINE: ", power_line.count(), "MONTH: ", pipeline_last_month.count(), "PERC %: ", pipeline_last_month_perc)
+        # print("PIPELINE: ", power_line.count(), "MONTH: ", pipeline_last_month.count(), "PERC %: ", pipeline_last_month_perc)
     else:
         pipeline_last_month = 0
 
@@ -328,14 +328,14 @@ def agency_companies(request):
     nullified = User.objects.filter(is_disabled=True)
     if User.objects.filter(is_disabled=True).exists():
         nullified_month =  User.objects.filter(one_month & Q(is_disabled = True))
-        print("NULLIFIED: ", nullified.count(), "LAST MONTH: ", nullified_month.count())
+        # print("NULLIFIED: ", nullified.count(), "LAST MONTH: ", nullified_month.count())
         nullified_perc = nullified_month.count() / nullified.count() * 100
     else:
         nullified_perc = 0
 
     if request.method=='POST':
         search = request.POST.get('search')
-        print("SEARCH: ", search)
+        # print("SEARCH: ", search)
         all_companies = User.objects.filter(is_tax_admin=False)
         if search:
             companies = all_companies.filter(Q(company_name__icontains=search)) #& Q(is_tax_admin=False))
@@ -425,7 +425,7 @@ def agency_settings(request):
     if request.method == 'POST':
         form = AgencyForm(request.POST or None, request.FILES or None)
         if form.is_valid():
-            print("AGENCY CREATOR FORM...")
+            # print("AGENCY CREATOR FORM...")
             agency = form.save(commit=False)
             agency.is_tax_admin = True
             agency.save()
@@ -433,7 +433,8 @@ def agency_settings(request):
             messages.success(request, "Agent created successfully.")
             return redirect(reverse_lazy("agency_settings"))
         else:
-            print(form.errors)
+            messages.error(request, "Agent creation failed.")
+            return redirect(reverse_lazy("agency_settings"))
             
     context = {
         "angency_create_form": angency_create_form,
@@ -456,7 +457,7 @@ def add_company(request):
     if request.htmx:
         form = AddUserForm(request.POST or None)
         if form.is_valid():
-            print("HTMX COMPANY CREATOR FORM...")
+            # print("HTMX COMPANY CREATOR FORM...")
             company = form.save(commit=False)
             if company.is_tax_admin != 0:
                 company.is_tax_admin = 1
@@ -464,7 +465,7 @@ def add_company(request):
 
             messages.success(request, "Agency created successfully.")
 
-            print("COMPANY: ", company)
+            # print("COMPANY: ", company)
             context = {
                 "company": company
             }
@@ -477,7 +478,7 @@ def create_company(request):
     if request.method == 'POST':
         form = AddUserForm(request.POST or None)
         if form.is_valid():
-            print("HTMX COMPANY CREATOR FORM...")
+            # print("HTMX COMPANY CREATOR FORM...")
             company = form.save(commit=False)
             if company.is_tax_admin != 0:
                 company.is_tax_admin = 1
@@ -485,22 +486,22 @@ def create_company(request):
 
             messages.success(request, "Company created successfully.")
 
-            print("COMPANY: ", company)
+            # print("COMPANY: ", company)
             context = {
                 "company": company
             }
 
             return redirect(reverse_lazy("agency_companies"))
         else:
-            print(form.errors)
+            messages.error(request, "Company creation failed.")
             return redirect(reverse_lazy("agency_companies"))
 
 @login_required
 def add_update_infrastructure(request):
-    print("INFRASTRUCTURE HERE: - ", request.POST.get("infra_name"), request.POST.get('rate'))
+    # print("INFRASTRUCTURE HERE: - ", request.POST.get("infra_name"), request.POST.get('rate'))
 
     infra_rate = str(request.POST.get('rate')).split('.')[0].replace(',','')
-    print("RATE: ", infra_rate)
+    # print("RATE: ", infra_rate)
     form = InfrastructureSettingsForm(request.POST)
     if request.htmx:
         if form.is_valid():
@@ -514,8 +515,8 @@ def add_update_infrastructure(request):
                         rate=request.POST.get('rate'))
                 messages.success(request, "Infrastructure type added successfully")
         else:
-            print("ERROR: ", form.errors)
-        return HttpResponseClientRedirect(reverse_lazy("agency_settings"))
+            # print("ERROR: ", form.errors)
+            return HttpResponseClientRedirect(reverse_lazy("agency_settings"))
 
 @login_required
 def add_update_sector(request):
@@ -536,7 +537,7 @@ def add_update_revenue(request):
     rev_name = str(request.POST.get('name')).replace(' ', '-').lower()
     rev_rate = str(request.POST.get('rate')).split('.')[0].replace(',','')
     description = request.POST.get('description')
-    print("REVENUE: ", rev_name, request.POST.get('description'), rev_rate)
+    # print("REVENUE: ", rev_name, request.POST.get('description'), rev_rate)
     if request.htmx:
         if AdminSetting.objects.filter(slug__icontains=rev_name).exists():
             admin_settings = AdminSetting.objects.filter(slug=rev_name)
@@ -558,7 +559,7 @@ def edit_company(request, pk):
         if request.method == 'POST':
             form = AddUserForm(request.POST or None, instance=company)
             if form.is_valid():
-                print("HTMX COMPANY CREATOR FORM...")
+                # print("HTMX COMPANY CREATOR FORM...")
                 form.save(commit=False)
                 if request.POST.get("is_tax_admin") != 0:
                     form.is_tax_admin = 1
@@ -572,7 +573,8 @@ def edit_company(request, pk):
                 # }
                 # return render(request,"agency/partials/edit_company.html", context)
             else:
-                print(form.errors)
+                messages.error(request, f"{company.company_name} failed.")
+                return HttpResponseClientRedirect(reverse_lazy("agency_settings"))
         context = {
             "company_form": company_form,
             "company": company
@@ -616,7 +618,7 @@ def add_notification(request):
     if request.htmx:
         form = NotificationForm(request.POST or None)
         if form.is_valid():
-            print("HTMX NOTIFICATION FORM...")
+            # print("HTMX NOTIFICATION FORM...")
             note = form.save()
 
             messages.success(request, "Agency created successfully.")
@@ -624,8 +626,8 @@ def add_notification(request):
                 "notifications": note
             }
             return render(request,"agency/pages/admin-settings.html#notification", context)
-        else:
-            print(form.errors)
+        # else:
+        #     print(form.errors)
         # context = {
         #     "company_form": form,
         # }
@@ -639,7 +641,7 @@ def agency_account(request):
         # instance = Agency.objects.get(id=agency[0].id)
         form = AgencyForm(request.POST or None, request.FILES or None, instance=agency)
         if form.is_valid():
-            print("HTMX AGENCY CREATOR FORM...")
+            # print("HTMX AGENCY CREATOR FORM...")
             # agency = form.save(commit=False)
             form.save()
 
@@ -657,18 +659,18 @@ def agency_account(request):
 @login_required
 def company_approve_waiver(request):
     if request.method == 'POST':
-        print("Posted")
+        # print("Posted")
         form = WaiverForm(request.POST or None)
         if not Waiver.objects.filter(referenceid=request.POST["referenceid"]).exists():
             if form.is_valid():
                 form.save()
 
-                print("Form submited and valid")
+                # print("Form submited and valid")
                 messages.success(request, "Waiver applied successfully.")
                 return redirect('company_dispute_receipt', request.POST.get("referenceid"))
                 # return redirect('company_revised_receipt', request.POST.get("referenceid"))
-            else:
-                print(form.errors)
+            # else:
+            #     print(form.errors)
         else:
             if form.is_valid():
                 waiver = Waiver.objects.get(referenceid=request.POST["referenceid"])
@@ -686,7 +688,7 @@ def send_revised_notice(request):
     # Send email to new user company
     mail_subject = f"Revised Demand Notice - Ref No: {request.POST['referenceid']}"
     to_email = company.email
-    print("URL: ", settings.URL)
+    # print("URL: ", settings.URL)
     html_content = render_to_string("Emails/admin/revised_notice.html", {
         "company":company,
         "agency_email":agency.agency_email,
@@ -741,10 +743,10 @@ def email_template(request):
 def agency_upload_new(request):
     ref_id = generate_ref_id()
     if request.method == 'POST':
-        print("UPLOAD POSTED...")
+        # print("UPLOAD POSTED...")
         bulk_upload = request.FILES['bulk_upload']
         company = User.objects.get(pk=request.POST['company'])
-        print("COMPANY: ", company)
+        # print("COMPANY: ", company)
         print(bulk_upload)
         # resource = InfrastructureResource()
         # return f"COMPANY: {company}"

@@ -15,10 +15,10 @@ from account.models import User
 @login_required
 def agency_apply_for_permit(request, pk):
 
-    print("ADMIN NEW: ADD INFRASTRUCTURE")
+    # print("ADMIN NEW: ADD INFRASTRUCTURE")
     company = User.objects.get(pk=pk)
 
-    print("NEW: APPLY FOR NEW PERMIT")
+    # print("NEW: APPLY FOR NEW PERMIT")
     form = InfrastructureForm()
     
     # total_sum, subtotal, sum_cost_infrastructure, application_cost, admin_fees, sar_cost, infra = agency_total_due(company, False)
@@ -53,8 +53,6 @@ def agency_add_infrastructure_form(request):
     current_year = datetime.now().year
     infrastructure = InfrastructureType.objects.get(pk=request.GET.get('infrastructure'))
     userid = User.objects.get(pk=request.GET['userid'])
-    print("INFRA NAME: ", infrastructure.infra_name)
-    print("COMPANY: ", userid.id)
 
     if ('Mast' in infrastructure.infra_name) | ('Roof' in infrastructure.infra_name):
         context = {
@@ -76,24 +74,23 @@ def agency_add_infrastructure_form(request):
 def add_infrastructure(request):
     if request.method == 'POST':
         company = User.objects.get(pk=request.POST['company'])
-        print("COMPANY ADD INFRA: ", company)
 
         if not request.POST['year_installed']:
             year_installed = int(datetime.now().year)
-            print(year_installed, type(year_installed))
-            print(request.POST['year_installed'], type(request.POST['year_installed']))
+            # print(year_installed, type(year_installed))
+            # print(request.POST['year_installed'], type(request.POST['year_installed']))
         else:
             year_installed = request.POST['year_installed']
 
         infra_type = InfrastructureType.objects.get(pk=request.POST['infra_type'])
 
-        print(infra_type)
+        # print(infra_type)
         if (('Mast' in infra_type.infra_name) | ('Roof' in infra_type.infra_name)):
             cost = infra_type.rate
         else:
             cost = int(request.POST['length']) * int(infra_type.rate)
 
-        print("COST: ", cost)
+        # print("COST: ", cost)
         # print("COST: ", request.POST['length'] )
 
         form = InfrastructureForm(request.POST or None, request.FILES or None)
@@ -118,7 +115,7 @@ def add_infrastructure(request):
 def add_infrastructure2(request):
     if request.method == 'POST':
         company = User.objects.get(pk=request.POST['company'])
-        print("COMPANY ADD INFRA: ", company)
+        # print("COMPANY ADD INFRA: ", company)
 
         if not request.POST['year_installed']:
             year_installed = datetime.now().year
@@ -131,14 +128,14 @@ def add_infrastructure2(request):
 
         infra_type = InfrastructureType.objects.get(pk=request.POST['infra_type'])
 
-        print(infra_type)
+        # print(infra_type)
         if (('Mast' in infra_type.infra_name) | ('Roof' in infra_type.infra_name)):
             cost = infra_type.rate
         else:
             cost = int(request.POST['length']) * int(infra_type.rate)
 
-        print("COST: ", cost)
-        print("COST: ", request.POST['length'] )
+        # print("COST: ", cost)
+        # print("COST: ", request.POST['length'] )
 
         form = InfrastructureForm2(request.POST or None, request.FILES or None)
         if form.is_valid():
@@ -150,8 +147,8 @@ def add_infrastructure2(request):
             form.cost = cost
             form.save()
             messages.success(request, f"{form.infra_type} added successfully")
-        else:
-            print(form.errors)
+        # else:
+            # print(form.errors)
     context = {
         'infrastructure': InfrastructureType.objects.all().first(),
     }
@@ -163,7 +160,7 @@ def agency_add_ex_infrastructure_form(request):
         current_year.append(year)
     infrastructure = InfrastructureType.objects.get(pk=request.GET.get('infrastructure'))
     userid = User.objects.get(pk=request.GET['userid'])
-    print("INFRA NAME: ", infrastructure.infra_name)
+    # print("INFRA NAME: ", infrastructure.infra_name)
     # print("COMPANY: ", userid.id)
 
     if ('Mast' in infrastructure.infra_name) | ('Roof' in infrastructure.infra_name):
@@ -196,13 +193,13 @@ def add_ex_infrastructure(request):
 
         infra_type = InfrastructureType.objects.get(pk=request.POST['infra_type'])
 
-        print(infra_type)
+        # print(infra_type)
         if (('Mast' in infra_type.infra_name) | ('Roof' in infra_type.infra_name)):
             cost = infra_type.rate
         else:
             cost = request.POST['length'] * infra_type.rate
 
-        print("COST: ", cost)
+        # print("COST: ", cost)
         # print("COST: ", request.POST['length'] )
 
         form = InfrastructureForm(request.POST or None, request.FILES or None)
@@ -216,7 +213,7 @@ def add_ex_infrastructure(request):
             form.save()
             messages.success(request, f"{form.infra_type} added successfully")
         else:
-            print(form.errors)
+            # print(form.errors)
             messages.error(request, f"{form.errors}")
     context = {
         'infrastructure': InfrastructureType.objects.all().first(),
@@ -230,7 +227,7 @@ def add_ex_infrastructure2(request):
     if request.method == 'POST':
         if not request.POST['year_installed']:
             year_installed = datetime.now().year
-            print(year_installed)
+            # print(year_installed)
         else:
             year_installed = request.POST['year_installed']
 
@@ -239,14 +236,14 @@ def add_ex_infrastructure2(request):
 
         infra_type = InfrastructureType.objects.get(pk=request.POST['infra_type'])
 
-        print(infra_type)
+        # print(infra_type)
         if (('Mast' in infra_type.infra_name) | ('Roof' in infra_type.infra_name)):
             cost = infra_type.rate
         else:
             cost = int(request.POST['length']) * int(infra_type.rate)
 
-        print("COST: ", cost)
-        print("COST: ", request.POST['length'] )
+        # print("COST: ", cost)
+        # print("COST: ", request.POST['length'] )
 
         form = InfrastructureForm2(request.POST or None, request.FILES or None)
         if form.is_valid():
@@ -260,7 +257,7 @@ def add_ex_infrastructure2(request):
             form.save()
             messages.success(request, f"{form.infra_type} added successfully")
         else:
-            print(form.errors)
+            # print(form.errors)
             messages.error(request, f"{form.errors}")
     context = {
         'infrastructure': InfrastructureType.objects.all().first(),

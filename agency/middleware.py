@@ -14,8 +14,8 @@ class AgencyAreaMiddleware:
             
             return all([
                 passes_email,
-                is_pro,
-                has_money,
+                # is_pro,
+                # has_money,
             ])
 
 
