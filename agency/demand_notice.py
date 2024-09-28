@@ -26,7 +26,6 @@ def agency_process_infrastructure(request, pk):
     agency = request.user
 
     infrastructures = Infrastructure.objects.filter(Q(company=company) & Q(processed=False) & Q(created_by=agency))
-    print("INFRA PROCESS: ", infrastructures)
     infrastructures.update(processed=True, updated_at=datetime.now())
     return redirect('agency_add_infrastructure', company.id)
 
@@ -44,8 +43,7 @@ def agency_generate_demand_notice(request, pk):
          return redirect('agency_add_infrastructure', company.id)
     
     total_sum, subtotal, sum_cost_infrastructure, application_cost, admin_fees, sar_cost, infra = agency_total_due(company, False, agency)
-    print("TOTAL DUES: ", total_sum, "| INFRA COST: ", sum_cost_infrastructure, "| APP: ", application_cost, "| ADMIN: ", admin_fees, "| SAR: ", sar_cost)
-    print("INFRA: ", infra)
+    
     # Save to Demand Notice Table
     # referenceid, company, created_by, status (unpaid, disputed, revised, paid, resolved)
     # infrastructure cost, 
@@ -84,7 +82,6 @@ def agency_generate_receipt(request, ref_id):
     infra = demand_notice.infra
     infra = infra.replace("'", '"')
     infra = json.loads(infra)
-    # print(type(infra), infra)
 
     context = {
         # 'infrastructure': infrastructure,
@@ -113,7 +110,7 @@ def agency_generate_receipt(request, ref_id):
 
 @login_required
 def apply_for_existing_permit(request, pk):
-    print("EXISTING: APPLY FOR EXISTING PERMIT")
+    # EXISTING: APPLY FOR EXISTING PERMIT
     company = User.objects.get(pk=pk)
     agency = request.user
     ref_id = generate_ref_id()
@@ -148,15 +145,12 @@ def generate_ex_demand_notice(request):
     ref_id = generate_ref_id()
     
     total_sum, subtotal, sum_cost_infrastructure, application_cost, admin_fees, sar_cost, infra = agency_total_due(company, True, agency)
-    # print("TOTAL DUES: ", total_sum, sum_cost_infrastructure, application_cost, admin_fees, sar_cost)
 
     penalty_fee, total_annual_fees = agency_penalty_calculation(company)
     penalty = penalty_fee.filter(Q(is_existing=True) & Q(processed=False) & Q(created_by=request.user)).values('penalty_fee').aggregate(penal = Sum('penalty_fee'))
     penalty = (penalty['penal'] // 10000) * 10000
 
     annual_fees = total_annual_fees.filter(Q(is_existing=True) & Q(processed=False)).values('total_annual_fees').aggregate(total = Sum('total_annual_fees'))['total']
-    
-    # print("ANNUAL FEES: ", annual_fees, type(annual_fees))
     
     # Save to Demand Notice Table
     # referenceid, company, created_by, status (unpaid, disputed, revised, paid, resolved)
@@ -200,7 +194,6 @@ def agency_generate_ex_receipt(request, ref_id):
     infra = demand_notice.infra
     infra = infra.replace("'", '"')
     infra = json.loads(infra)
-    # print(type(infra), infra)
 
     context = {
         # 'infrastructure': infrastructure,
@@ -240,7 +233,6 @@ def undispute_ex_demand_notice_receipt(request, ref_id):
     infra = demand_notice.infra
     infra = infra.replace("'", '"')
     infra = json.loads(infra)
-    # print(type(infra), infra)
 
     context = {
         'infra': infra,
@@ -320,14 +312,11 @@ def agency_waiver(request, ref_id):
         company = User.objects.get(pk=request.POST['company'])
         ref_id = request.POST['referenceid']
         waiver_applied = request.POST['waiver_applied']
-        # print("COMAPANY: REFID: | ",company, ref_id)
 
         form = WaiverForm(request.POST or None, request.FILES or None)
         
         dn = demand_notice.get(Q(referenceid = ref_id))
-        # print("NEW DN: ", dn)
         if form.is_valid():
-            # print("WAVER HERE FORM IS VALID ")
             if not int(request.POST['waiver_applied']):
                 total_due = dn.subtotal + dn.annual_fee + dn.penalty + dn.application_fee + \
                     dn.admin_fee + dn.site_assessment - int(request.POST.get('waiver_applied'))
@@ -335,7 +324,6 @@ def agency_waiver(request, ref_id):
                 total_due = dn.subtotal + dn.annual_fee + dn.penalty + dn.application_fee + \
                 dn.admin_fee + dn.site_assessment - int(request.POST.get('waiver_applied'))
             
-            # print("TOTAL DUE: ", total_due)
             demand_notice.update(waiver_applied=waiver_applied, total_due=total_due, status="REVISED", \
                                  referenceid=ref_id, updated_at=datetime.now())
             messages.success(request, 'Waiver was added successfully.')
@@ -344,7 +332,6 @@ def agency_waiver(request, ref_id):
             mail_subject = "REVISED DEMAND NOTICE BY AGENCY!"
             to_email = company.email
             agency = request.user
-            # print("URL: ", settings.URL)
             html_content = render_to_string("Emails/admin/revised_notice.html", {
                 "company":company,
                 "agency_email":agency,
@@ -356,13 +343,11 @@ def agency_waiver(request, ref_id):
             text_content = strip_tags(html_content)
             send_email_function(html_content, text_content, to_email, mail_subject)
         else:
-            # print("FILE FORMAT INVALID", form.errors)
             messages.error(request, 'Waiver failed.')
 
     if demand_notice.exists():
         dn = demand_notice.get(Q(referenceid=ref_id))
         form = WaiverForm(request.POST or None, request.FILES or None, instance=dn)
-        # print("DN: = ", dn)
         demand_notice = dn
         penalty = dn.penalty
         remittance = dn.remittance
@@ -371,7 +356,6 @@ def agency_waiver(request, ref_id):
         amount_due = dn.amount_due
         annual_fee = dn.annual_fee
         total_liability = dn.total_due #- dn.waiver_applied
-        # print("TOTAL DUE: ", total_liability)
     else:
         form = WaiverForm(request.POST or None, request.FILES or None)
 
