@@ -49,13 +49,10 @@ def total_due(company, ex):
     # Cost of all Infrastructure
     sum_cost_infrastructure = infrastructure.aggregate(total_sum = Sum('cost'))['total_sum']
     subtotal = infrastructure.aggregate(total = Sum('costing'))['total']
-    print("SUBTOTAL: ", subtotal)
     # Application cost
     application_cost = infrastructure.count() * AdminSetting.objects.get(slug='application-fee').rate
-    print("APPLICATION FEES: ", application_cost)
     # Administartive fees
     admin_fees = AdminSetting.objects.get(slug='admin-pm-fees').rate * sum_cost_infrastructure / 100
-    print("ADMIN FEES: ", admin_fees)
 
     sar_count = Infrastructure.objects.filter(Q(company=company) & Q(processed=False) & (Q(infra_type__infra_name__icontains='mast') | Q(infra_type__infra_name__icontains='rooftop'))).count()
     if sar_count:
@@ -63,14 +60,9 @@ def total_due(company, ex):
     else:
         sar_cost =0
 
-    print("SAR COUNT: ", sar_count, "SAR COST: ", sar_cost)
-
     infra = list(infrastructure)
 
-    print("INFRA LIST: ", infra)
-
     total_sum = sum_cost_infrastructure + application_cost + admin_fees + sar_cost
-    print("TOTAL SUM: ", total_sum)
 
     return total_sum, subtotal, sum_cost_infrastructure, application_cost, admin_fees, sar_cost, infra
 
@@ -276,7 +268,6 @@ def agency_total_due(company, ex, agency):
     # infra = Infrastructure.objects.filter(company=company, is_existing=ex)
     all = Infrastructure.objects.select_related('infra_type') \
         .filter(Q(company=company) & Q(is_existing=ex) & Q(processed=False) & Q(created_by=agency))
-    print("ALL TOTAL: ", all)
     
     infrastructure = all.values('infra_type__infra_name', 'cost')\
         .annotate(num = Count('infra_type'), costing = Sum('cost'))\
@@ -284,13 +275,10 @@ def agency_total_due(company, ex, agency):
     # Cost of all Infrastructure
     sum_cost_infrastructure = infrastructure.aggregate(total_sum = Sum('cost'))['total_sum']
     subtotal = infrastructure.aggregate(total = Sum('costing'))['total']
-    print("SUBTOTAL: ", subtotal)
     # Application cost
     application_cost = infrastructure.count() * AdminSetting.objects.get(slug='application-fee').rate
-    print("APPLICATION FEES: ", application_cost)
     # Administartive fees
     admin_fees = AdminSetting.objects.get(slug='admin-pm-fees').rate * sum_cost_infrastructure / 100
-    print("ADMIN FEES: ", admin_fees)
 
     sar_count = Infrastructure.objects.filter(Q(company=company) & Q(processed=False) & (Q(infra_type__infra_name__icontains='mast') | Q(infra_type__infra_name__icontains='rooftop'))).count()
     if sar_count:
@@ -298,13 +286,8 @@ def agency_total_due(company, ex, agency):
     else:
         sar_cost =0
 
-    print("SAR COUNT: ", sar_count, "SAR COST: ", sar_cost)
-
     infra = list(infrastructure)
 
-    print("INFRA LIST: ", infra)
-
     total_sum = sum_cost_infrastructure + application_cost + admin_fees + sar_cost
-    print("TORAL SUM: ", total_sum)
 
     return total_sum, subtotal, sum_cost_infrastructure, application_cost, admin_fees, sar_cost, infra
