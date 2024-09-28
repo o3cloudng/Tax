@@ -18,9 +18,7 @@ from django.db import transaction
 def upload_new(request):
     ref_id = generate_ref_id()
     if request.method == 'POST':
-        print("UPLOAD POSTED...")
         bulk_upload = request.FILES['bulk_upload']
-        print(bulk_upload)
         # resource = InfrastructureResource()
         if not bulk_upload.name.endswith('csv'):
             messages.error(request, 'Wrong file format')

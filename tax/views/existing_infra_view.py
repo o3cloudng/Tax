@@ -28,7 +28,6 @@ def apply_for_waver(request):
         form = WaiverForm(request.POST or None, request.FILES or None)
         
         if form.is_valid():
-            print("WAVER HERE FORM IS VALID ")
             wave = form.save(commit=False)
             wave.referenceid = request.POST.get('referenceid')
             wave.company = request.user
@@ -37,10 +36,11 @@ def apply_for_waver(request):
             messages.success(request, 'Your request for waver was sent successfully.')
             return redirect('dispute-ex-demand-notice', request.POST.get('referenceid'))
         else:
-            print("FILE FORMAT INVALID", form.errors)
-      
-        messages.error(request, 'Your request for waver failed.')
-        return redirect('dispute-ex-demand-notice', request.POST.get('referenceid'))
+            messages.error(request, 'Your request for waver failed.')
+            return redirect('dispute-ex-demand-notice', request.POST.get('referenceid'))
+        
+    messages.error(request, 'Your request for waver failed.')
+    return redirect('dispute-ex-demand-notice', request.POST.get('referenceid'))
 
 @login_required
 @tax_payer_only
@@ -67,16 +67,12 @@ def apply_remittance(request):
 
         
         if form.is_valid():
-            print("WAVER HERE FORM IS VALID ")
-
             if not int(request.POST.get('remitted_amount')):
                 total_due = rem.subtotal + rem.annual_fee + rem.penalty + rem.application_fee + \
                     rem.admin_fee + rem.site_assessment - int(request.POST.get('remitted_amount'))
             else:
                 total_due = rem.subtotal + rem.annual_fee + rem.application_fee + \
                 rem.admin_fee + rem.site_assessment - int(request.POST.get('remitted_amount'))
-            
-            print("TOTAL DUE: ", total_due)
 
             remit = DemandNotice.objects.filter(Q(company=request.user) & Q(referenceid = request.POST.get('referenceid')))
             # print("TOTAL DUE: ", total_due)
@@ -90,8 +86,6 @@ def apply_remittance(request):
 
             messages.success(request, 'Your remittance was added successfully.')
             return redirect('dispute-ex-demand-notice', request.POST.get('referenceid'))
-        else:
-            print("FILE FORMAT INVALID", form.errors)
       
         messages.error(request, 'Your remittance failed.')
         return redirect('dispute-ex-demand-notice', request.POST.get('referenceid'))
@@ -111,7 +105,7 @@ def age(the_date):
 @tax_payer_only
 def apply_for_existing_permit(request):
     ref_id = generate_ref_id()
-    print("EXISITING: APPLY FOR EXISTING PERMIT")
+    # EXISITING: APPLY FOR EXISTING PERMIT
     # form = PermitExForm()
     upload_form = BulkUploadForm()
     current_year = []
@@ -156,8 +150,6 @@ def generate_ex_demand_notice(request, ref_id):
     penalty = (penalty['penal'] // 10000) * 10000
 
     annual_fees = total_annual_fees.filter(Q(is_existing=True) & Q(processed=False)).values('total_annual_fees').aggregate(total = Sum('total_annual_fees'))['total']
-    
-    print("ANNUAL FEES: ", annual_fees, type(annual_fees))
     
     # Save to Demand Notice Table
     # referenceid, company, created_by, status (unpaid, disputed, revised, paid, resolved)
@@ -230,7 +222,6 @@ def dispute_ex_demand_notice(request, ref_id):
     if Remittance.objects.filter(Q(company=company) & Q(referenceid=ref_id)).exists():
         remit = Remittance.objects.get(Q(company=company) & Q(referenceid=ref_id))
         form = RemittanceForm(request.POST or None, request.FILES or None, instance=remit)
-        print("REMIT: = ", remit)
     else:
         form = RemittanceForm(request.POST or None, request.FILES or None)
 
@@ -242,8 +233,6 @@ def dispute_ex_demand_notice(request, ref_id):
     amount_due = demand_notice.amount_due
     annual_fee = demand_notice.annual_fee
     total_liability = demand_notice.total_due #- demand_notice.penalty
-
-    print("REMITTANCE: ", remittance, type(remittance))
 
     context = {
         'ref_id': ref_id,
@@ -487,7 +476,6 @@ def revised_demand_notice_receipt(request, ref_id):
     infra = demand_notice.infra
     infra = infra.replace("'", '"')
     infra = json.loads(infra)
-    # print(type(infra), infra)
 
     context = {
         'company': company,

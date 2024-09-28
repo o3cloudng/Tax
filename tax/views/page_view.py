@@ -146,7 +146,6 @@ def disputes(request):
 @tax_payer_only
 def downloads(request):
     files = DemandNotice.objects.filter(company=request.user)
-    print("FILE: ", files)
     for file in files:
         print("File Here", file.referenceid)
         # print("File Here", file.upload_application_letter)

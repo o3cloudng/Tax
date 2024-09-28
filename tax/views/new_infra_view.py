@@ -21,7 +21,7 @@ from django.db.models.functions import Now
 @login_required
 @tax_payer_only
 def new_infrastructure(request):
-    print("NEW: APPLY FOR NEW PERMIT")
+    # NEW: APPLY FOR NEW PERMIT
     form = InfrastructureForm()
     
     # total_sum, subtotal, sum_cost_infrastructure, application_cost, admin_fees, sar_cost = total_due(request.user.id, False)
@@ -57,7 +57,6 @@ def generate_demand_notice(request, ref_id):
         return redirect('apply_for_permit')
     
     total_sum, subtotal, sum_cost_infrastructure, application_cost, admin_fees, sar_cost, infra = total_due(company, False)
-    print("TOTAL DUES: ", total_sum, "| INFRA COST: ", sum_cost_infrastructure, "| APP: ", application_cost, "| ADMIN: ", admin_fees, "| SAR: ", sar_cost)
     # Save to Demand Notice Table
     # referenceid, company, created_by, status (unpaid, disputed, revised, paid, resolved)
     # infrastructure cost, 
