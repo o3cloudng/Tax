@@ -8,7 +8,12 @@ from django.shortcuts import render
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 import time
+from django.urls import reverse_lazy
+from django.shortcuts import redirect
 
+
+def landingPage(request):
+    return redirect(reverse_lazy('login'))
 
 def event_stream():
     initial_data = ""

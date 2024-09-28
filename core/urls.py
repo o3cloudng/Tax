@@ -5,9 +5,11 @@ from django.conf import settings
 # from django.conf.urls.defaults import *
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
+from core import services
 admin.autodiscover()
 
 urlpatterns = [
+    path('', services.landingPage, name="landingPage"),
     path('admin/', admin.site.urls),
     path('clients/', include("account.urls")),
     path('tax/', include("tax.urls")),
