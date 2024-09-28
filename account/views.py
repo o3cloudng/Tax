@@ -60,10 +60,6 @@ def signup(request):
 
         if form.is_valid():
             user = form.save()
-            # return HttpResponse("HTML Email sent.")
-
-
-            print("REQUEST: ", user)
             login(request, user)
             return redirect("setup_profile")
     else:
@@ -82,7 +78,6 @@ def logout_user(request):
 @login_required
 def dashboard(request):
     user = User.objects.get(id = request.user.id)
-    print("Complete? ", user.is_profile_complete)
     if user.is_profile_complete:
         context = {
             "is_profile_complete" : True
@@ -121,7 +116,7 @@ def setup_profile(request):
             # EMAIL TO ADMIN OF NEW COMAPNY
             mail_subject = f"New Company Registration Alert - {profile.company_name}"
             to_email = agency.agency_email
-            print("URL: ", settings.URL)
+            
             html_content = render_to_string("Emails/admin/new_company_reg.html", {
                 "company_name":profile.company_name,
                 "reg_date":profile.created_at,
@@ -138,8 +133,6 @@ def setup_profile(request):
             messages.success(request, "Profile completed successfully")
             return redirect("dashboard")
         else:
-            print("FORM IS INVALID.")
-            print("ERRORS: ", form.errors)
             messages.error(request, "Please, fill the profile correctly.")
             return redirect(reverse_lazy('setup_profile'))
         
@@ -158,10 +151,7 @@ def change_password(request):
         # old_password = request.POST.get('old_password')
         new_password = request.POST.get('new_password')
         user = User.objects.get(pk=request.user.id)
-        print("HASH PASSWORD: ", user.password)
-        # print("HASH NEW PASS: ", user.set_password(old_password))
         if user is not None:
-            print("HASH NEW PASSWORD: ", request.POST.get('new_password'))
             user.set_password(new_password)
             user.save()
             messages.success(request, "Password changed successfully.")
@@ -178,7 +168,6 @@ def forgot_password(request):
         email = request.POST.get("email")
 
         if not User.objects.filter(email = email).exists():
-            print("User email does not exists.")
             messages.error(request, "Email does not exist.")
             return redirect('forgot_password')
         else:
