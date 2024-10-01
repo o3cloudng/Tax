@@ -14,7 +14,6 @@ from agency.forms import InfrastructureSettingsForm
 def delete_infra_settings(request):
     infraid = request.POST.get('infraid')
     infraid = InfrastructureType.objects.get(pk=infraid)
-    print("DELETE INFRA: ", infraid)
     infraid.delete()
     # return "DELETED"
     messages.success(request, f"{ infraid.infra_name }, was deleted.")
@@ -24,7 +23,6 @@ def delete_infra_settings(request):
 def delete_revenue_settings(request):
     revenue = request.POST.get('revenue')
     revenue = AdminSetting.objects.get(pk=revenue)
-    print("DELETE EVENUE: ", revenue)
     revenue.delete()
     # return "DELETED"
     messages.success(request, f"{ revenue.name }, was deleted.")
@@ -35,7 +33,6 @@ def delete_sector_settings(request):
     sector = request.POST.get('sector')
     sector = Sector.objects.get(pk=sector)
     sector.delete()
-    print("DELETE SECTOR: ", sector)
     # return "DELETED"
     messages.success(request, f"{ sector.name }, was deleted.")
     return HttpResponseClientRedirect(reverse_lazy("agency_settings"))
@@ -45,7 +42,6 @@ def delete_notification_settings(request):
     notification = request.POST.get('notification')
     notification = InfrastructureType.objects.get(pk=notification)
     notification.delete()
-    print("DELETE INFRA: ", notification)
     # return "DELETED"
     messages.success(request, f"{ notification.name }, was deleted.")
     return HttpResponseClientRedirect(reverse_lazy("agency_settings"))
@@ -53,7 +49,6 @@ def delete_notification_settings(request):
 @login_required
 def company_search(request):
     search = request.POST.get('search')
-    print("SEARCH: ", search)
     all_companies = User.objects.filter(is_tax_admin=False)
     if search:
         companies = all_companies.filter((Q(company_name__icontains=search) \
@@ -67,7 +62,6 @@ def company_search(request):
         "companies": companies
     }
 
-    print("COMPANIES: ", companies)
     # return HttpResponse(companies)
     return render(request, "agency/partials/search-result-company.html", context)
 
@@ -75,7 +69,6 @@ def company_search(request):
 @login_required
 def search_disputed(request):
     search = request.POST.get('search')
-    print("SEARCH: ", search)
     all_disputed = DemandNotice.objects.filter(status__icontains='DISPUTED')
     if search:
         disputed = all_disputed.filter(Q(referenceid__icontains=search)\
@@ -91,13 +84,11 @@ def search_disputed(request):
 @login_required
 def search_infrastructure(request):
     search = request.POST.get('search')
-    print("SEARCH: ", search)
     all_infrastructure = Infrastructure.objects.all()
     if search:
         infrastructures = all_infrastructure.filter(Q(infra_type__infra_name__icontains=search)\
             | Q(company__company_name__icontains=search) \
                 | Q(address__icontains=search))
-        # print("INFRA: ", infrastructure.count())
     else:
         infrastructures = Infrastructure.objects.all()[:20]
     context = {
@@ -109,7 +100,6 @@ def search_infrastructure(request):
 @login_required
 def search_demand_notices(request):
     search = request.POST.get('search')
-    print("SEARCH: ", search)
     all_demand_notices = DemandNotice.objects.all()
     if search:
         demand_notices = all_demand_notices.filter(Q(referenceid__icontains=search)\
@@ -118,7 +108,6 @@ def search_demand_notices(request):
     else:
         demand_notices = DemandNotice.objects.all()[:20]
 
-    # print("DEMAND NOTICES: ", demand_notices)
     context = {
         "search": search,
         "all": demand_notices
@@ -129,7 +118,6 @@ def search_demand_notices(request):
 @login_required
 def search_company_details(request):
     search = request.POST.get('search')
-    # print("SEARCH: ", search)
     all_demand_notices = DemandNotice.objects.all()
     if search:
         demand_notices = all_demand_notices.filter(Q(referenceid__icontains=search)\

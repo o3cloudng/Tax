@@ -258,51 +258,6 @@ def undispute_ex_demand_notice_receipt(request, ref_id):
     return render(request, 'tax-payers/receipts/undisputed_ex_dn_receipt.html', context)
 
 
-@login_required
-def agency_apply_waiver(request):
-    if request.method == 'POST':
-        print("REF ID----------------------: ", request.POST['referenceid'])
-        print("COMPANY----------------------: ", request.POST['company'])
-        print("WAIVER APPLIED----------------------: ", request.POST['waiver_applied'])
-    # if request.method == 'POST':
-    #     company = User.objects.get(request.POST.get('company'))
-    #     ref_id = request.POST.get('referenceid')
-    #     print("COMAPANY: REFID: | ",company, ref_id)
-    #     demand_notice = DemandNotice.objects.filter(referenceid = ref_id)
-    #     # form = WaiverForm(request.POST or None, request.FILES or None)
-        
-    #     dn = demand_notice.get(Q(referenceid = ref_id))
-    #     print("NEW DN: ", dn)
-    #     # if form.is_valid():
-    #     #     print("WAVER HERE FORM IS VALID ")
-    #     #     if not int(request.POST.get('waiver_applied')):
-    #     #         total_due = dn.subtotal + dn.annual_fee + dn.penalty + dn.application_fee + \
-    #     #             dn.admin_fee + dn.site_assessment - int(request.POST.get('waiver_applied'))
-    #     #     else:
-    #     #         total_due = dn.subtotal + dn.annual_fee + dn.application_fee + \
-    #     #         dn.admin_fee + dn.site_assessment - int(request.POST.get('waiver_applied'))
-            
-    #     #     print("TOTAL DUE: ", total_due)
-
-    #     #     # remit = DemandNotice.objects.filter(Q(company=request.user) & Q(referenceid = request.POST.get('referenceid')))
-    #     #     # print("TOTAL DUE: ", total_due)
-    #     #     dn.update(waiver_applied=request.POST.get('waiver_applied'), total_due=total_due, updated_at=datetime.now())
-            
-    #     #     # waiver = form.save(commit=False)
-    #     #     # waiver.referenceid = ref_id
-    #     #     # waiver.company = company
-    #     #     # waiver.apply_for_waver = request.POST.get('apply_for_waver')
-    #     #     # waiver.save()
-
-    #     #     messages.success(request, 'Waiver was added successfully.')
-    #     #     # return redirect('agency_waiver', ref_id)
-    #     # else:
-    #     #     print("FILE FORMAT INVALID", form.errors)
-      
-    #     messages.error(request, 'Waiver failed.')
-        # return redirect('agency_waiver', ref_id)
-    return "DONE"
-
 
 @login_required # Dispute Demand Notice - Issues
 def agency_waiver(request, ref_id):
