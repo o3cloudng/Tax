@@ -52,8 +52,8 @@ def company_search(request):
     all_companies = User.objects.filter(is_tax_admin=False)
     if search:
         companies = all_companies.filter((Q(company_name__icontains=search) \
-                                          | Q(sector__name__icontains=search) | Q(phone_number__icontains=search)) \
-                                         & Q(is_superuser=False)) #& Q(is_tax_admin=False))
+            | Q(sector__name__icontains=search) | Q(phone_number__icontains=search)) \
+                & Q(is_superuser=False) & Q(is_tax_admin=False))
     else:
         companies = User.objects.filter(Q(is_tax_admin=False) & Q(is_superuser=False))
 
