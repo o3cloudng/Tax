@@ -1,5 +1,6 @@
 import os
 from celery import Celery
+from celery.schedules import crontab
 
 # set the default Django settings module for the 'celery' program.
 # this is also used in manage.py
@@ -7,7 +8,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 
 app = Celery('core')
 app.conf.enable_utc = False
-app.conf.update(timezone="Asia/Kolkata")
+app.conf.update(timezone="Africa/Lagos")
 
 # Using a string here means the worker don't have to serialize
 # the configuration object to child processes.
@@ -17,7 +18,10 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 
 
 app.conf.beat_scheduler = {
-
+    'send-annual-email': {
+        'task':'agency.tasks.send_periodic_emails',
+        'schedule': crontab(hour=10, minute=30),
+    }
 }
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks()
