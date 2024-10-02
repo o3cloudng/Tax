@@ -73,17 +73,13 @@ class DemandNotice(models.Model):
     def save(self, *args, **kwargs):
         if self.pk:
             self.updated_at = datetime.now()
-            print("UPDATED DATE: ", self.updated_at)
             original = DemandNotice.objects.get(pk=self.pk)
             self.amount_due = self.total_due
             if original.remittance != self.remittance or original.waiver_applied != self.waiver_applied:
                 self.total_due = self.calculated_total_due()
-                # print("DIFFERENCE")
         else:
-            print("UPDATED NEW DATE: ", self.updated_at)
             self.updated_at = datetime.now()
             self.total_due = self.calculated_total_due()
-            # print("NO DIFFERENCE")
         super(DemandNotice, self).save(*args, **kwargs)
 
     def calculated_total_due(self):
@@ -173,8 +169,7 @@ class Remittance(models.Model):
 #             cummulative_age = age * 1
 
 #         self.age = cummulative_age
-#         print("AGE FROM DB: ", age, type(age), " | CUM AGE: ", cummulative_age,)
- 
+
 #         super(Permit, self).save(*args, **kwargs)
 
 #     def __str__(self):
