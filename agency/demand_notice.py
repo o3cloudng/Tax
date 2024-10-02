@@ -78,6 +78,8 @@ def agency_generate_receipt(request, ref_id):
     admin_settings = AdminSetting.objects.all()
 
     demand_notice = DemandNotice.objects.get(referenceid=ref_id)
+    # company = demand_notice.company.company_name
+    # print(company)
 
     infra = demand_notice.infra
     infra = infra.replace("'", '"')
@@ -86,6 +88,7 @@ def agency_generate_receipt(request, ref_id):
     context = {
         # 'infrastructure': infrastructure,
         'ref_id': ref_id,
+        'company': demand_notice.company,
         'subtotal': demand_notice.subtotal,
         'agency': Agency.objects.all().first(),
         'app_fee': admin_settings.get(slug='application-fee'),
@@ -100,6 +103,7 @@ def agency_generate_receipt(request, ref_id):
         'total_liability': demand_notice.total_due,
         'site_assessment_cost': demand_notice.site_assessment       
     }
+    messages.success(request, "Demand notice generated.")
     
     return render(request, 'agency/receipts/demand-notice.html', context)
 
@@ -198,7 +202,7 @@ def agency_generate_ex_receipt(request, ref_id):
     context = {
         # 'infrastructure': infrastructure,
         'ref_id': ref_id,
-        # 'company': company,
+        'company': demand_notice.company,
         'subtotal': demand_notice.subtotal,
         'agency': Agency.objects.all().first(),
         'app_fee': admin_settings.get(slug='application-fee'),
@@ -215,6 +219,7 @@ def agency_generate_ex_receipt(request, ref_id):
         'total_liability': demand_notice.total_due,
         'site_assessment_cost': demand_notice.site_assessment       
     }
+    messages.success(request, "Demand notice receipt generated")
     return render(request, 'agency/receipts/demand-notice-ex-receipt.html', context)
 
 

@@ -288,6 +288,7 @@ def undispute_ex_demand_notice_receipt(request, ref_id):
         'total_liability': demand_notice.total_due,
         'site_assessment_cost': demand_notice.site_assessment       
     }
+    messages.success(request, "Demand notice updated.")
     return render(request, 'tax-payers/receipts/undisputed_ex_dn_receipt.html', context)
 
 
