@@ -324,10 +324,10 @@ def agency_waiver(request, ref_id):
         if form.is_valid():
             if not int(request.POST['waiver_applied']):
                 total_due = dn.subtotal + dn.annual_fee + dn.penalty + dn.application_fee + \
-                    dn.admin_fee + dn.site_assessment - int(request.POST.get('waiver_applied'))
+                    dn.admin_fee + dn.site_assessment - (dn.remittance + dn.amount_paid + int(request.POST.get('waiver_applied')))
             else:
                 total_due = dn.subtotal + dn.annual_fee + dn.penalty + dn.application_fee + \
-                dn.admin_fee + dn.site_assessment - int(request.POST.get('waiver_applied'))
+                dn.admin_fee + dn.site_assessment - (dn.remittance + dn.amount_paid + int(request.POST.get('waiver_applied')))
             
             demand_notice.update(waiver_applied=waiver_applied, total_due=total_due, status="REVISED", \
                                  referenceid=ref_id, updated_at=datetime.now())
@@ -361,6 +361,7 @@ def agency_waiver(request, ref_id):
         amount_due = dn.amount_due
         annual_fee = dn.annual_fee
         total_liability = dn.total_due #- dn.waiver_applied
+        status = "REVISED"
         # print("TOTAL DUE: ", total_liability)
     else:
         form = WaiverForm(request.POST or None, request.FILES or None)

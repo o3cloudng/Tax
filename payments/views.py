@@ -1,6 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib import messages
 from .models import Payment, UserWallet
 from django.conf import settings
+from django.db.models import Sum
 from tax.models import DemandNotice
 from account.models import AdminSetting
 from agency.models import Agency
@@ -20,16 +22,18 @@ def initiate_payment(request):
 
         demand_notice = DemandNotice.objects.get(referenceid=request.POST['referenceid'])
 
-        total = demand_notice.amount_due + demand_notice.penalty + demand_notice.annual_fee\
-            - demand_notice.remittance - demand_notice.waiver_applied - demand_notice.amount_paid
+        total = (demand_notice.amount_due + demand_notice.penalty) \
+            - (demand_notice.remittance + demand_notice.waiver_applied + demand_notice.amount_paid)
 
-        print("TOTAL LIABILITY: ", demand_notice.total_due, " Sum: ", total)
+        # print("TOTAL LIABILITY: ", demand_notice.total_due, " Sum: ", total)
         amount = demand_notice.total_due * 100
 
         pk = settings.PAYSTACK_PUBLIC_KEY
 
         payment = Payment.objects.create(amount=amount, email=email, user=request.user, referenceid=referenceid)
         payment.save()
+        # demand_notice.amount_paid = (amount / 100)
+        # demand_notice.save()
 
         
         context = {
@@ -44,38 +48,42 @@ def initiate_payment(request):
     return render(request, 'payments/payment.html')
 
 
-def verify_payment(request, ref):
-    payment = Payment.objects.get(ref=ref)
-    verified = payment.verify_payment()
+# def verify_payment(request, ref):
+#     payment = Payment.objects.get(ref=ref)
+#     verified = payment.verify_payment()
 
-    demand_notice = DemandNotice.objects.get(referenceid=payment.referenceid)
+#     demand_notice = DemandNotice.objects.get(referenceid=payment.referenceid)
 
-    total = demand_notice.amount_due + demand_notice.penalty + demand_notice.annual_fee\
-        - demand_notice.remittance - demand_notice.waiver_applied - demand_notice.amount_paid
+#     total = demand_notice.amount_due + demand_notice.penalty + demand_notice.annual_fee\
+#         - demand_notice.remittance - demand_notice.waiver_applied - demand_notice.amount_paid
 
-    print("TOTAL LIABILITY: ", demand_notice.total_due, " Sum: ", total)
-    amount = demand_notice.total_due * 100
+#     print("TOTAL LIABILITY: ", demand_notice.total_due, " Sum: ", total)
+#     amount = demand_notice.total_due * 100
 
 
 
-    if verified:
-        if (total == (payment.amount / 100)):
-            DemandNotice.objects.filter(referenceid=payment.referenceid).update(amount_paid=total, status='RESOLVED')
-        else:
-            DemandNotice.objects.filter(referenceid=payment.referenceid).update(amount_paid=total, status='UNDISPUTED PAID')
-        # user_wallet = UserWallet.objects.get(user=request.user)
-        # user_wallet.balance += payment.amount
-        # user_wallet.save()
-        # print(request.user.username, " funded wallet successfully")
-        # return render(request, "success.html")
-    return render(request, "success.html")
+#     if verified:
+#         if (total == (payment.amount / 100)):
+#             DemandNotice.objects.filter(referenceid=payment.referenceid).update(amount_paid=total, status='RESOLVED')
+#         else:
+#             DemandNotice.objects.filter(referenceid=payment.referenceid).update(amount_paid=total, status='UNDISPUTED PAID')
+#         # user_wallet = UserWallet.objects.get(user=request.user)
+#         # user_wallet.balance += payment.amount
+#         # user_wallet.save()
+#         # print(request.user.username, " funded wallet successfully")
+#         # return render(request, "success.html")
+#     return render(request, "success.html")
 
 @transaction.atomic
 def paystack_verify(request, ref):
 
+    if not Payment.objects.filter(ref=ref).exists():
+        messages.error(request, "Payment not initialized.")
+        return redirect('dashboard')
     payment = Payment.objects.get(ref=ref)
-    print("REFERENCEID: ", payment.referenceid)
-    print("REF: ", payment.ref)
+    referenceid = payment.referenceid
+    # print("REFERENCEID: ", payment.referenceid)
+    # print("REF: ", payment.ref)
     
     url=f"https://api.paystack.co/transaction/verify/{payment.ref}"
 
@@ -88,23 +96,31 @@ def paystack_verify(request, ref):
 
     data = response.json()
     # print("SUCCESS: ",response.json())
-    demand_notice = DemandNotice.objects.get(referenceid=payment.referenceid)
-
-    total = demand_notice.amount_due + demand_notice.penalty + demand_notice.annual_fee\
-        - demand_notice.remittance - demand_notice.waiver_applied - demand_notice.amount_paid
     
     if payment.ref == ref:
         # print("REF: ", data['data']['amount'], type(data['data']['amount']), payment.amount, total)
         if (data['status'] == True) & (data['data']['amount']==payment.amount):
-            # print("SUCCESS")
-            print(data['message'])
-            if total == (payment.amount / 100):
-                DemandNotice.objects.filter(referenceid=payment.referenceid).update(amount_paid=total, status='RESOLVED')
-                print("RESOLVED: ")
-            else:
-                DemandNotice.objects.filter(referenceid=payment.referenceid).update(amount_paid=total, status='UNDISPUTED PAID')
-                print("UNDISPUETD PAID: ")
             Payment.objects.filter(ref=payment.ref).update(verified=True)
+            
+            if Payment.objects.filter(referenceid=referenceid, verified=True).exists():
+                total_paid = Payment.objects.filter(referenceid=referenceid, verified=True).aggregate(total=Sum('amount'))['total'] / 100    
+            else:
+                total_paid = 0
+            demand_notice = DemandNotice.objects.get(referenceid=payment.referenceid)
+
+            total = demand_notice.amount_due + demand_notice.penalty + demand_notice.annual_fee \
+                - (demand_notice.remittance + demand_notice.waiver_applied + total_paid)
+            # print("SUCCESS")
+            # print(data['message'])
+            if total <= 0:
+                DemandNotice.objects.filter(referenceid=payment.referenceid) \
+                .update(amount_paid=total_paid, status='RESOLVED', total_due=total)
+                # print("RESOLVED: ")
+            else:
+                DemandNotice.objects.filter(referenceid=payment.referenceid) \
+                    .update(amount_paid=total_paid, status='UNDISPUTED PAID', total_due=total)
+                # print("UNDISPUETD PAID: ")
+            # Payment.objects.filter(ref=payment.ref).update(verified=True)
 
     infra = demand_notice.infra
     infra = infra.replace("'", '"')
