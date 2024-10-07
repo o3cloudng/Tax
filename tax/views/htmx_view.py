@@ -10,6 +10,40 @@ from django.db.models import Q
 
 
 @login_required
+def search_tax_dashboard(request):
+    search = request.POST.get('search')
+    all_demand_notices = DemandNotice.objects.filter(company=request.user)
+    if search:
+        demand_notices = all_demand_notices.filter(Q(referenceid__icontains=search))
+    else:
+        demand_notices = all_demand_notices.all()[:20]
+    context = {
+        "search": search,
+        "demand_notices": demand_notices
+    }
+    return render(request, "tax-payers/partials/search/search-result-dn.html", context)
+
+
+@login_required
+def search_tax_infrastructure(request):
+    search = request.POST.get('search')
+    all_infrastructures = Infrastructure.objects.filter(company=request.user)
+    print("SEARCH: ", search)
+    if search:
+        infrastructures = all_infrastructures.filter(Q(referenceid__icontains=search))
+        print("DEMAND NOTICES: ", infrastructures)
+        for dn in infrastructures:
+            print("AMOUNT DUE: ", dn.amount_due)
+    else:
+        infrastructures = all_infrastructures.all()[:20]
+    context = {
+        "search": search,
+        "infrastructures": infrastructures
+    }
+    return render(request, "tax-payers/partials/search/search-result-dn.html", context)
+
+
+@login_required
 def search_tax_dn(request):
     search = request.POST.get('search')
     all_demand_notices = DemandNotice.objects.all()

@@ -28,6 +28,8 @@ urlpatterns = [
 
     # HTMX SEARCH
     path('apply/search/', htmx_view.search_tax_dn, name="search_tax_dn"),
+    path('apply/search/dashboard/', htmx_view.search_tax_dashboard, name="search_tax_dashboard"),
+    path('apply/search/infratructure/', htmx_view.search_tax_infrastructure, name="search_tax_infrastructure"),
 
     # path('apply/permit/add/', new_infra_view.add_permit_form, name="add_permit_form"),
     # path('apply/permit/dn/edit/add/', new_infra_view.add_dispute_dn_edit, name="add_dispute_dn_edit"),

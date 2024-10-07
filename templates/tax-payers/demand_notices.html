@@ -103,7 +103,7 @@
     
               <article class="flex md:self-end md:-mt-[80px] spacing-x-2 gap-4">
                 <!-- Search and Sort Table -->
-                {% include 'tax-payers/partials/search/search-dn.html' %}
+                {% include 'tax-payers/partials/search/search-dashboard.html' %}
                 <div
                   class="flex flex-row justify-start items-center  spacing-x-1 border-[1px] border-slate-200 rounded-full w-20 px-2 cursor-pointer">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -135,16 +135,7 @@
                   </thead>
                   <!-- hover:[&>*:nth-child(odd)]:bg-white -->
                   <tbody class="divide-y divide-gray-100 bg-white" id="search-result">
-                    {% if demand_notices.exists %}
-                    {% for dn in demand_notices %}
                     {% include 'tax-payers/partials/search/search-result-dn.html' %}
-                    {% endfor %}
-                    {% else %}
-                    <tr>
-                      <td colspan="10"> No demand notice
-                      </td>
-                    </tr>
-                    {% endif %}
                   </tbody>
                   <tfoot>
                     <tr>

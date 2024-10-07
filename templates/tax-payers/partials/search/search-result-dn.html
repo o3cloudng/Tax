@@ -1,3 +1,5 @@
+{% if demand_notices.exists %}
+{% for dn in demand_notices %}
 {% load humanize %}
 <tr>
     <td>
@@ -56,3 +58,10 @@
     </td>
     </a>
 </tr>
+{% endfor %}
+{% else %}
+<tr>
+    <td colspan="10"> No demand notice
+    </td>
+</tr>
+{% endif %}
