@@ -7,7 +7,7 @@
     <!-- Top Bar with title page, buttons and notification tabs -->
     <section class="w-full flex flex-row justify-between items-center">
       <article class="flex flex-col">
-        <h2 class="text-xl text-darkBlue">Paid Demand Notice </h2>
+        <h2 class="text-xl text-darkBlue">Resolved Demand Notice </h2>
         <p class="text-sm text-gray600">View your receipt</p>
       </article>
 
@@ -28,8 +28,8 @@
         <div class="flex flex-row justify-between items-center">
           <img src="{% static 'img/Lasimra_logo-full.png' %}" alt="" class="w-20 h-20" />
           <div class="w-80 text-left">
-            <h1 class="text-orange-400 font-semibold text-4xl my-2">
-              Paid Demand Notice
+            <h1 class="text-green-800 font-semibold text-4xl my-2">
+              Resolved Demand Notice
             </h1>
             <p class="text-xs text-gray-800 font-semibold">
               Reference ID: {{ ref.referenceid }}
@@ -77,7 +77,7 @@
                 <p class="font-semibold">Terms: <span class="text-gray-600">Due on Receipt</span></p>
               </div>
               <div
-                class="text-orange-400 font-semibold mt-2 bg-gray-100 rounded-md shadow-sm p-2 hover:bg-orange-400 hover:text-white">
+                class="text-green-800 font-semibold mt-2 bg-gray-100 rounded-md shadow-sm p-2 hover:bg-green-800 hover:text-white">
                 <h2 class="block text-sm">Amount Due:</h2>
                 <h2 class="text-2xl font-bold">&#8358;{{ total_liability | floatformat:2 | intcomma }}</h2>
               </div>

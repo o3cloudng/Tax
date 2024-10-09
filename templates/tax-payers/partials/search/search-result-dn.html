@@ -4,10 +4,10 @@
 <tr>
     <td>
         {% if dn.status in 'RESOLVED' %}
-        <a href="{% url 'undispute_ex_demand_notice_receipt' dn.referenceid %}">{{ dn.referenceid }}</a>
+        <a href="{% url 'dispute-ex-demand-notice' dn.referenceid %}">{{ dn.referenceid }}</a>
         {% endif %}
         {% if dn.status in 'PAID' %}
-        <a href="{% url 'undispute_ex_demand_notice_receipt' dn.referenceid %}">{{ dn.referenceid }}</a>
+        <a href="{% url 'dispute-ex-demand-notice' dn.referenceid %}">{{ dn.referenceid }}</a>
         {% endif %}
         {% if dn.status in 'REVISED' %}
         <a href="{% url 'revised_demand_notice_receipt' dn.referenceid %}">{{ dn.referenceid }}</a>

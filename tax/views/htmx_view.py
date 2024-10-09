@@ -28,12 +28,8 @@ def search_tax_dashboard(request):
 def search_tax_infrastructure(request):
     search = request.POST.get('search')
     all_infrastructures = Infrastructure.objects.filter(company=request.user)
-    print("SEARCH: ", search)
     if search:
         infrastructures = all_infrastructures.filter(Q(referenceid__icontains=search))
-        print("DEMAND NOTICES: ", infrastructures)
-        for dn in infrastructures:
-            print("AMOUNT DUE: ", dn.amount_due)
     else:
         infrastructures = all_infrastructures.all()[:20]
     context = {
@@ -101,8 +97,8 @@ def add_infrastructure(request):
     if request.method == 'POST':
         if not request.POST['year_installed']:
             year_installed = int(datetime.now().year)
-            print(year_installed, type(year_installed))
-            print(request.POST['year_installed'], type(request.POST['year_installed']))
+            # print(year_installed, type(year_installed))
+            # print(request.POST['year_installed'], type(request.POST['year_installed']))
         else:
             year_installed = request.POST['year_installed']
 
@@ -123,7 +119,7 @@ def add_infrastructure(request):
             form.save()
             messages.success(request, f"{form.infra_type} added successfully")
         else:
-            print(form.errors)
+            # print(form.errors)
             messages.error(request, f"{form.errors}")
     context = {
         'infrastructure': InfrastructureType.objects.all().first(),
@@ -171,8 +167,8 @@ def add_ex_infrastructure(request):
     if request.method == 'POST':
         if not request.POST['year_installed']:
             year_installed = int(datetime.now().year)
-            print(year_installed, type(year_installed))
-            print(request.POST['year_installed'], type(request.POST['year_installed']))
+            # print(year_installed, type(year_installed))
+            # print(request.POST['year_installed'], type(request.POST['year_installed']))
         else:
             year_installed = request.POST['year_installed']
 
