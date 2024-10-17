@@ -22,7 +22,7 @@
           </span>
           Bulk Upload
         </button>
-        <a href="/assets/media/uploads/bulk_upload_sample.csv" class="text-sm text-gray-800 underline">Download
+        <a href="/assets/media/bulk_upload_sample.csv" class="text-sm text-gray-800 underline">Download
           Format</a>
       </article>
 
@@ -37,7 +37,9 @@
       </article>
       {% include 'tax-payers/partials/toasts.html' %}
     </section>
-    
+    {% if request.is_complete %}
+    {% include 'tax-payers/partials/complete-profile.html' %}
+    {% endif %}
     <section class="w-full mt-20 grid grid-cols-6 gap-4">
       {% comment %}
       {% include 'tax-payers/partials/ex/infrastructure-form.html' %}
@@ -143,5 +145,5 @@ async function uploadFile() {
     alert('The file has been uploaded successfully.');
 }
 </script> -->
-
+{% include 'tax-payers/partials/upload.html' %}
 {% endblock %}

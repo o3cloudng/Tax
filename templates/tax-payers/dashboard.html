@@ -27,7 +27,11 @@
       </article>
       {% include 'tax-payers/partials/toasts.html' %}
     </section>
-    <!-- Form Tab -->
+    {% if request.is_complete %}
+    {% include 'tax-payers/partials/complete-profile.html' %}
+    {% endif %}
+    
+  <!-- Form Tab -->
     <section class="w-full grid grid-rows  md:grid-cols-4 gap-4 justify-between items-center mt-10">
       <div class="card">
         <p>Total Demand Notices</p>
@@ -93,7 +97,7 @@
               :class="currentTab == $el.innerHTML ? 'active' : '' ">Revised</a>
           </li>
           <li role="presentation">
-            <a href="#tabs-revised"
+            <a href="#tabs-demand-notice"
               class="my-2 block border-x-0 border-b-2 border-t-0 border-transparent px-7 pb-3.5 pt-4 text-sm font-medium titlecase text-gray-600 leading-tight"
               id="tabs-revised-tab" data-bs-toggle="pill" data-bs-target="#tabs-revised" role="tab"
               aria-controls="tabs-revised" aria-selected="false" @click.prevent="currentTab=$el.innerHTML"
@@ -364,8 +368,8 @@
               </article>
             </section>
           </div>
-          <div x-show="currentTab == 'Demand Notice'" class="transition-opacity duration-150 ease-linear" id="tabs-revised"
-            role="tabpanel" aria-labelledby="tabs-revised-tab">
+          <div x-show="currentTab == 'Demand Notice'" class="transition-opacity duration-150 ease-linear" id="tabs-demand-notice"
+            role="tabpanel" aria-labelledby="tabs-demand-notice-tab">
             <!-- Revised Tabs -->
             <section class="flex flex-col w-full">
 

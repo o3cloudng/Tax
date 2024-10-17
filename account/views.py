@@ -61,6 +61,8 @@ def signup(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
+            message = f'Hello {user.email}! You have been logged in'
+            messages.success(request, message)
             return redirect("setup_profile")
     else:
         form = SignupForm()

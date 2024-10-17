@@ -67,4 +67,5 @@ urlpatterns = [
 
     # BULK UPLOAD (CSV / EXCEL)
     path('upload/new/', import_export.upload_new, name="upload_new"),
+    path('upload/old/', import_export.upload_old, name="upload_old"),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 

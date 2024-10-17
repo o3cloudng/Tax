@@ -19,12 +19,14 @@ def dashboard(request):
     all = DemandNotice.objects.filter(company=request.user).order_by('-updated_at')
 
     demand_notices = all.all()
-    undisputed_unpaid = all.filter(Q(status='UNDISPUTED UNPAID'))
-    undisputed_paid = all.filter(Q(status='UNDISPUTED PAID'))
-    revised = all.filter(Q(status='REVISED'))
-    resolved = all.filter(Q(status='RESOLVED'))
-    demand_notice = all.filter(Q(status='DEMAND NOTICE'))
+    undisputed_unpaid = all.filter(Q(status__icontains='UNDISPUTED UNPAID'))
+    undisputed_paid = all.filter(Q(status__icontains='UNDISPUTED PAID'))
+    revised = all.filter(Q(status__icontains='REVISED'))
+    resolved = all.filter(Q(status__icontains='RESOLVED'))
+    demand_notice = all.filter(Q(status__icontains='DEMAND NOTICE'))
     disputed = all.filter(Q(status__icontains='UNDISPUTED'))
+
+    # print(demand_notice.count())
     
     context = {
          "is_profile_complete" : False,
@@ -44,18 +46,19 @@ def dashboard(request):
 def demand_notice(request):
     all = DemandNotice.objects.filter(company=request.user).order_by('-updated_at')
     demand_notices = all.all()
-    undisputed_unpaid = all.filter(Q(status='UNDISPUTED UNPAID'))
-    undisputed_paid = all.filter(Q(status='UNDISPUTED'))
-    revised = all.filter(Q(status='REVISED'))
-    resolved = all.filter(Q(status='RESOLVED'))
-    demand_notice = all.filter(Q(status='DEMAND NOTICE'))
+    undisputed_unpaid = all.filter(Q(status__icontains='UNDISPUTED UNPAID'))
+    undisputed_paid = all.filter(Q(status__icontains='UNDISPUTED PAID'))
+    revised = all.filter(Q(status__icontains='REVISED'))
+    resolved = all.filter(Q(status__icontains='RESOLVED'))
+    demand_notice = all.filter(Q(status__icontains='DEMAND NOTICE'))
     disputed = all.filter(Q(status__icontains='UNDISPUTED'))
 
-    total_demand_notices = demand_notices.aggregate(total = Sum('total_due'))['total']
-    total_undisputed_paid = undisputed_paid.aggregate(total = Sum('total_due'))['total']
+    total_demand_notices = demand_notices.aggregate(total = Sum('amount_paid'))['total']
+    total_undisputed_paid = undisputed_paid.aggregate(total = Sum('amount_paid'))['total']
     total_undisputed_unpaid = undisputed_unpaid.aggregate(total = Sum('total_due'))['total']
-    total_revised = revised.aggregate(total = Sum('total_due'))['total']
-    total_resolved = resolved.aggregate(total = Sum('total_due'))['total']
+    total_revised = revised.aggregate(total = Sum('amount_paid'))['total']
+    total_resolved = resolved.aggregate(total = Sum('amount_paid'))['total']
+    print("TOTAL: ", total_demand_notices)
 
     if not total_demand_notices:
         total_demand_notices = 0.00
@@ -82,6 +85,9 @@ def demand_notice(request):
         "total_resolved": total_resolved,
         "disputed": disputed,
         "demand_notice": demand_notice,
+        "undisputed_unpaid": undisputed_unpaid,
+        "revised": revised,
+        "resolved": resolved,
     }
     return render(request, 'tax-payers/demand_notices.html', context)
 
@@ -146,8 +152,8 @@ def disputes(request):
 @tax_payer_only
 def downloads(request):
     files = DemandNotice.objects.filter(company=request.user)
-    for file in files:
-        print("File Here", file.referenceid)
+    # for file in files:
+        # print("File Here", file.referenceid)
         # print("File Here", file.upload_application_letter)
         # print("File Here", file.infra_type)
 

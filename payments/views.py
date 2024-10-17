@@ -155,8 +155,13 @@ def paystack_verify(request, ref):
         'admin_rate':admin_settings.get(slug='admin-pm-fees').rate,
         'sar_fee':admin_settings.get(slug='site-assessment').rate,
     }
+    all_paid = (demand_notice.amount_due + demand_notice.penalty + demand_notice.annual_fee) \
+                - (demand_notice.remittance + demand_notice.waiver_applied + total_paid)
+    if all_paid == 0:
+        return render(request, "payments/paid_receipt.html", context)
+    
+    return render(request, "payments/undisputed_paid_receipt.html", context)
 
-    return render(request, "payments/paid_receipt.html", context)
 
     # authorization="Authorization: Bearer YOUR_SECRET_KEY"
     # curl "$url" -H "$authorization" -X GET

@@ -23,6 +23,9 @@
             
           </article>
         </section>
+        {% if request.is_complete %}
+        {% include 'tax-payers/partials/complete-profile.html' %}
+        {% endif %}
         <!-- Form Tab -->
         <section class="w-full grid grid-rows  md:grid-cols-4 gap-4 justify-between items-center mt-10">
           <div class="card">
