@@ -27,9 +27,7 @@ def dashboard(request):
     demand_notice = all.filter(status__icontains='DEMAND NOTICE')
     disputed = all.filter(status__icontains='UNDISPUTED')
 
-    # print(demand_notice.count())
-    print("RESOLVED: ", resolved.count())
-    
+    # print(demand_notice.count())    
     context = {
          "is_profile_complete" : False,
          "demand_notices": demand_notices,

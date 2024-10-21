@@ -23,7 +23,7 @@
 
       </article>
     </section>
-    {% if request.is_complete %}
+    {% if request.is_not_complete %}
     {% include 'tax-payers/partials/complete-profile.html' %}
     {% endif %}
     <!-- Form Tab -->
