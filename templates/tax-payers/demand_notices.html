@@ -201,7 +201,7 @@
                   <tbody class="divide-y divide-gray-100 bg-white ">
                     {% if resolved.exists %}
                     {% for dn in resolved %}
-                    {% include 'tax-payers/partials/search/search-result-dn.html' %}
+                    {% include 'tax-payers/partials/search/search-result.html' %}
                     {% endfor %}
                     {% else %}
                     <tr>
@@ -271,7 +271,7 @@
                   <tbody class="divide-y divide-gray-100 bg-white ">
                     {% if disputed.exists %}
                     {% for dn in disputed %}
-                    {% include 'tax-payers/partials/search/search-result-dn.html' %}
+                    {% include 'tax-payers/partials/search/search-result.html' %}
                     {% endfor %}
                     {% else %}
                     <tr>
@@ -341,7 +341,7 @@
                   <tbody class="divide-y divide-gray-100 bg-white ">
                     {% if revised.exists %}
                     {% for dn in revised %}
-                    {% include 'tax-payers/partials/search/search-result-dn.html' %}
+                    {% include 'tax-payers/partials/search/search-result.html' %}
                     {% endfor %}
                     {% else %}
                     <tr>
@@ -411,7 +411,7 @@
                   <tbody class="divide-y divide-gray-100 bg-white ">
                     {% if demand_notice.exists %}
                     {% for dn in demand_notice %}
-                    {% include 'tax-payers/partials/search/search-result-dn.html' %}
+                    {% include 'tax-payers/partials/search/search-result.html' %}
                     {% endfor %}
                     {% else %}
                     <tr>

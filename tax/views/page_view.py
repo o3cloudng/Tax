@@ -19,20 +19,23 @@ def dashboard(request):
     all = DemandNotice.objects.filter(company=request.user).order_by('-updated_at')
 
     demand_notices = all.all()
-    undisputed_unpaid = all.filter(Q(status__icontains='UNDISPUTED UNPAID'))
-    undisputed_paid = all.filter(Q(status__icontains='UNDISPUTED PAID'))
-    revised = all.filter(Q(status__icontains='REVISED'))
-    resolved = all.filter(Q(status__icontains='RESOLVED'))
-    demand_notice = all.filter(Q(status__icontains='DEMAND NOTICE'))
-    disputed = all.filter(Q(status__icontains='UNDISPUTED'))
+    undisputed_unpaid = all.filter(status='UNDISPUTED UNPAID')
+    undisputed_paid = all.filter(status='UNDISPUTED UNPAID')
+    undisputed = all.filter(Q(status__icontains='UNDISPUTED'))
+    revised = all.filter(status__icontains='REVISED')
+    resolved = all.filter(status='RESOLVED')
+    demand_notice = all.filter(status__icontains='DEMAND NOTICE')
+    disputed = all.filter(status__icontains='UNDISPUTED')
 
     # print(demand_notice.count())
+    print("RESOLVED: ", resolved.count())
     
     context = {
          "is_profile_complete" : False,
          "demand_notices": demand_notices,
          "undisputed_unpaid": undisputed_unpaid,
          "undisputed_paid": undisputed_paid,
+         "disputed": undisputed,
          "revised": revised,
          "resolved": resolved,
          "disputed": disputed,
@@ -48,6 +51,7 @@ def demand_notice(request):
     demand_notices = all.all()
     undisputed_unpaid = all.filter(Q(status__icontains='UNDISPUTED UNPAID'))
     undisputed_paid = all.filter(Q(status__icontains='UNDISPUTED PAID'))
+    # undisputed = all.filter(Q(status='UNDISPUTED UNPAID') | Q(status='UNDISPUTED UNPAID'))
     revised = all.filter(Q(status__icontains='REVISED'))
     resolved = all.filter(Q(status__icontains='RESOLVED'))
     demand_notice = all.filter(Q(status__icontains='DEMAND NOTICE'))
